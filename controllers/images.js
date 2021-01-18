@@ -13,13 +13,14 @@ const GET = async(req, res) => {
 }
 
 const POST = (req, res) => {
+  //adds images
   let names = req.files.map((file) => file.originalname);
   db.addImage(req.userID, names);
   res.send();
 }
 
 const DELETE = () => {
-
+  //removes image
 }
 
 module.exports = { GET, POST, DELETE };

@@ -32,8 +32,9 @@ const App = () => {
 
     let blobs = [];
     for(const name of filenames.images)
-      blobs.push(await API.getImage(token, name));
+      blobs.push({img: await API.getImage(token, name), name });
 
+    console.log(blobs);
     setImages(blobs);
   }
 

@@ -6,8 +6,8 @@
 .image{
   width: 300px;
   height: 300px;
-  object-fit: contain;
-  border: 2px solid #888888;
+  object-fit: scale-down;
+  border: 1px solid #666666;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   cursor: pointer;
@@ -29,7 +29,7 @@
 
   .name{
     flex: 1;
-    color: white;
+    color: #999999;
     padding: 8px;
     line-height: 20px;
   }

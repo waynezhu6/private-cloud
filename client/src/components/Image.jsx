@@ -7,7 +7,7 @@ const Image = (props) => {
     <div className={styles.body}>
       <img src={props.src} className={styles.image}></img>
       <div className={styles.container}>
-        <div className={styles.name}>{props.filename}</div>
+        <div className={styles.name}>{props.name}</div>
         <div className={styles.trash}>&#128465;</div>
       </div>
     </div>

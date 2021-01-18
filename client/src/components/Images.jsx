@@ -12,8 +12,8 @@ const Images = (props) => {
 
   return(
     <div className={styles.body}>
-      {images.map((url, index) => {
-        return <Image src={url} key={index}/>
+      {images.map((data, index) => {
+        return <Image name={data.name} src={data.img} key={index}/>
       })}
     </div>
   )
