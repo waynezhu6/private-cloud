@@ -9,9 +9,14 @@
   </p>
 </p>
 
+## Table of Contents
 
+* [About the Project](#about-the-project)
+* [Usage](#usage)
+* [API Reference](#api-reference)
+  * [Authentication](#apiauth)
+  * [Images](#apiimages)
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
 This project stores images uploaded by users in a cloud file server. Users are then free to add, modify, or delete the images in their collections.
@@ -21,7 +26,7 @@ This app uses a React, Node.js, Express, MongoDB stack.
 
 ## Usage
 
-The easiest way to see this project in action is to visit the simple frontent at [https://35.202.216.223:5000](https://35.202.216.223:5000). There, you can login with the preexisting sample user with username "user" and password "1234", or choose to signup with your own user credentials. Otherwise, the API is hosted at [https://35.202.216.223:5000/api/*](https://35.202.216.223:5000/api/), where you can interact with it directly.
+The easiest way to see this project in action is to visit the simple frontent at [https://35.202.216.223:5000](https://35.202.216.223:5000). **There, you can login with the preexisting sample user with username "user" and password "1234"**, or choose to signup with your own user credentials. Otherwise, the API is hosted at [https://35.202.216.223:5000/api/*](https://35.202.216.223:5000/api/), where you can interact with it directly.
 
 ## API Reference
 
