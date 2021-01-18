@@ -2,7 +2,7 @@ const db = require('../db/index');
 
 const GET = async(req, res) => {
   //return one or more images
-  console.log(req.params);
+  //console.log(req.params);
   if(!req.params.id){
     let filenames = await db.getFileNames(req.userID);
     res.json({images: filenames});
