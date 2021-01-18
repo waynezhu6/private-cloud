@@ -64,7 +64,7 @@ POST /api/images/
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `image` | `image/* MIME-type File(s)` | (optional) specifies a specific file name to query for |
+| `image` | `image/* MIME-type File(s)` | a collection of images to upload to this user's repository |
 
 Uploads an image(s) to this user's repository. If the :id parameter is left empty, this endpoint will instead return an array of filenames for the photos in this user's repository
 
@@ -73,6 +73,6 @@ DELETE /api/images/
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `:id` | `string` | (optional) specifies a specific file name to query for |
+| `:id` | `string` | specifies a specific file name to delete |
 
 Deletes the specified image from this user's repository, if it exists.
