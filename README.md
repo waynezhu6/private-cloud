@@ -19,18 +19,20 @@
 
 ## About The Project
 
-This project stores images uploaded by users in a cloud file server. Users are then free to add, modify, or delete the images in their collections.
+This project stores collections of images uploaded to a cloud file server, where users are then free to add, modify, or delete the images in their collections.
 A very simple frontend has been written in React.
 
-This app uses a React, Node.js, Express, MongoDB stack.
+This app uses a React, Node.js, Express, MongoDB stack, and it's hosted on a Google Compute Engine cloud instance. On the backend, user data is stored in a MongoDB database, whereas the actual image files themselves are stored directly onto the disk. I'm using Express to route requests and return the appropriate responses, the specifications of which are noted below in the API reference.
 
 ## Usage
 
-The easiest way to see this project in action is to visit the simple frontent at [http://34.123.191.140:5000](http://34.123.191.140:5000). **There, you can login with the preexisting sample user with username "user" and password "1234"**, or choose to signup with your own user credentials. Otherwise, the API is hosted at [http://34.123.191.140:5000/api/*](http://34.123.191.140:5000/api/*), where you can interact with it directly.
+The easiest way to see this project in action is to visit the simple frontent at [http://34.123.191.140:5000](http://34.123.191.140:5000). **There, you can login with the preexisting sample user with username "user" and password "1234"**, or choose to signup with your own user credentials. There you should be able to see two images that I've uploaded. To upload more, click upload and choose the appropriate images. Once uploaded, you should see the page change accordingly.
+
+Otherwise, the API is hosted at [http://34.123.191.140:5000/api/*](http://34.123.191.140:5000/api/*), where you can interact with it directly.
 
 ## API Reference
 
-At its core, this project is driven by an RESTful-type API written with Node.js and Express framework. It acts as an interface between the client application and the file server/database that holds the user's images and information.
+At its core, this project is driven by an RESTful-type API written with Node.js and Express framework, acting as an interface between the client application and the file server/database that holds the user's images and information on the backend.
 
 ### /api/auth/
 
@@ -75,4 +77,4 @@ DELETE /api/images/
 | :--- | :--- | :--- |
 | `:id` | `string` | specifies a specific file name to delete |
 
-Deletes the specified image from this user's repository, if it exists.
+Deletes the specified image from this user's repository, if it exists. **Not functioning yet**
