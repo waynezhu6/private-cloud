@@ -10,7 +10,6 @@ const Header = (props) => {
   
   const onFileSubmit = async(e) => {
     const body = new FormData(form.current);
-    // files.map(file => data.append('file', file));
     console.log(token);
     await API.uploadImage(body, token);
     props.onFileSubmit();
@@ -22,15 +21,24 @@ const Header = (props) => {
 
   return(
     <div className={styles.body}>
-      <div className={styles.item}>Lorem</div>
-      <div className={styles.item}>Ipsum</div>
-      <div className={styles.item}>Dolor</div>
+      <div className={styles.item}>Shopify Backend Challenge</div>
       <div className={styles.spacer}></div>
       <div className={styles.item}>
         <form action="" ref={form}>
-          <input onChange={onFileSubmit} name="image" type="file" hidden ref={input}/>
+          <input 
+            onChange={onFileSubmit} 
+            name="image" 
+            type="file" 
+            hidden 
+            multiple 
+            ref={input}
+            accept="image/*"
+          />
         </form>
         <button onClick={() => input.current.click()}>Upload</button>
+      </div>
+      <div className={styles.item}>
+        <button className={styles.logout}>Logout</button>
       </div>
     </div>
   )

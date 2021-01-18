@@ -7,29 +7,29 @@
 }
 
 .item{
-  flex: 1;
   color: white;
   align-items: center;
   justify-content: center;
   text-align: center;
   line-height: 80px;
-
+  padding: 0px 20px;
+  
   button{
     background-color: #00B3FF;
     outline: none;
     border: none;
     padding: 10px;
     width: 120px;
-    border-radius: 16px;
+    border-radius: 20px;
     cursor: pointer;
     color: white;
   }
 
-  input{
-    width: 100%;
-    height: 100%;
+  .logout{
+    background-color: #1F2023;
+    border: 1px solid #666666;
   }
-  
+
 }
 
 .spacer{

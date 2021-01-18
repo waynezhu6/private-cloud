@@ -53,18 +53,10 @@ const removeImage = async(userID, filename) => {
   user = user[0];
 }
 
-const getImage = (userID, filename) => {
-
-}
-
 const getFileNames = async(userID) => {
   let user = await User.find({ _id: userID });
   if(user.length > 0)
     return user[0].images;
-}
-
-const deleteImage = (index) => {
-
 }
 
 module.exports = { login, signup, hasUser, addImage, getFileNames };

@@ -52,7 +52,7 @@ const getFileNames = async(token) => {
 
 const getImage = async(token, filename) => {
   //gets images
-  let res = await fetch(SERVER_URL + "images?f=" + filename, {
+  let res = await fetch(SERVER_URL + "images/" + filename, {
     method: "GET",
     headers: {
       'x-token': token,

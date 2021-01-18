@@ -2,6 +2,7 @@ import React from 'react';
 import styles from '../styles/Image.module.scss';
 
 const Image = (props) => {
+  
   return(
     <div className={styles.body}>
       <img src={props.src} className={styles.image}></img>

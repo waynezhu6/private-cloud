@@ -18,7 +18,6 @@ const decodeToken = (data) => {
 const jwtAuthentication = async(req, res, next) => {
   //injects userID into request if token is valid
   const token = req.header('x-token');
-  console.log(token, 21);
   if(!token)
     return next();
 
@@ -50,7 +49,6 @@ const jwtLogin = async(req, res) => {
   //returns token if login successful
   const { username, password } = req.body;
   const userID = await db.login(username, password);
-  console.log('login')
 
   if(!userID){
     res.status(401);
@@ -63,10 +61,8 @@ const jwtLogin = async(req, res) => {
 
 const signup = async(req, res) => {
   //returns true if signup successful
-  console.log('attempting signup')
   const { username, password } = req.body;
   let result = await db.signup(username, password);
-  console.log(result);
   if(result){
     const token = encodeToken({ result }); 
     return res.json({ token });
