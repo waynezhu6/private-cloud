@@ -64,7 +64,7 @@ POST /api/images/
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `:id` | `string` | (optional) specifies a specific file name to query for |
+| `image` | `image/* MIME-type File(s)` | (optional) specifies a specific file name to query for |
 
 Uploads an image(s) to this user's repository. If the :id parameter is left empty, this endpoint will instead return an array of filenames for the photos in this user's repository
 
