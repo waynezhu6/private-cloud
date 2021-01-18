@@ -56,6 +56,7 @@ GET /api/images/:id
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `:id` | `string` | (optional) specifies a specific file name to query for |
+
 Gets this user's images. If the :id parameter is left empty, this endpoint will instead return an array of filenames for the photos in this user's repository
 
 ```http
@@ -64,6 +65,7 @@ POST /api/images/
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `:id` | `string` | (optional) specifies a specific file name to query for |
+
 Uploads an image(s) to this user's repository. If the :id parameter is left empty, this endpoint will instead return an array of filenames for the photos in this user's repository
 
 ```http
@@ -72,4 +74,5 @@ DELETE /api/images/
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `:id` | `string` | (optional) specifies a specific file name to query for |
+
 Deletes the specified image from this user's repository, if it exists.
