@@ -26,7 +26,7 @@ This app uses a React, Node.js, Express, MongoDB stack.
 
 ## Usage
 
-The easiest way to see this project in action is to visit the simple frontent at [https://35.202.216.223:5000](https://35.202.216.223:5000). **There, you can login with the preexisting sample user with username "user" and password "1234"**, or choose to signup with your own user credentials. Otherwise, the API is hosted at [https://35.202.216.223:5000/api/*](https://35.202.216.223:5000/api/), where you can interact with it directly.
+The easiest way to see this project in action is to visit the simple frontent at [http://34.123.191.140:5000](http://34.123.191.140:5000). **There, you can login with the preexisting sample user with username "user" and password "1234"**, or choose to signup with your own user credentials. Otherwise, the API is hosted at [http://34.123.191.140:5000/api/*](http://34.123.191.140:5000/api/*), where you can interact with it directly.
 
 ## API Reference
 
