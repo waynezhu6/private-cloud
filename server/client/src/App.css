@@ -1,0 +1,9 @@
+.body{
+  width: 100vw;
+  height: 100vh;
+  background-color: #1F2023; 
+}
+
+.content{
+  display: flex;
+}

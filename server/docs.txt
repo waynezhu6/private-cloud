@@ -1,0 +1,18 @@
+HTTP GET /api/images
+  returns one or more images from this user
+  i - index to get. will return all images if unspecified
+
+HTTP POST /api/images
+  upload one or more images to this user
+
+HTTP DELETE /api/images
+  remove an image from this user
+  i - index to remove. mandatory
+
+todo:
+-tokenized authentication
+-image api actions
+-simple frontend
+-deploy to gcp, github pages
+-cli if time permits
+-project writeup
