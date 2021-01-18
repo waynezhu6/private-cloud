@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-const SERVER_URL = "http://localhost:5000/api/";
+//const SERVER_URL = "http://localhost:5000/api/";
+const SERVER_URL = "http://34.123.191.140:5000/";
 
 const useToken = () => {
   const [token, setToken] = useState(null);
