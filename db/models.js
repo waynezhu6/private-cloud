@@ -1,16 +1,26 @@
 const mongoose = require('mongoose');
 
-const ImagesSchema = new mongoose.Schema({
-  url: String,
-  private: Boolean
-});
-const Images = new mongoose.model('Image', ImagesSchema);
-
 const UserSchema = new mongoose.Schema({
   username: String,
   password: String,
-  images: []
+  uuid: String
 });
 const User = new mongoose.model('User', UserSchema);
 
-module.exports = { User, Images };
+const FilesSchema = new mongoose.Schema({
+  username: String,
+  uuid: String,
+  files: [{
+    name: String, // file name
+    path: String, // full file path
+    parent: String | undefined, // name of parent
+    isDir: Boolean, // true if dir
+    fileType: String | undefined, // file extension type
+    lastModified: Number, // last modified date
+    files: [{path: String}], // file paths of descendent files (if dir)
+  }],
+  public: [{path: String}]
+});
+const Files = new mongoose.model('Files', FilesSchema);
+
+module.exports = { User, Files };

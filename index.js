@@ -16,9 +16,13 @@ app.use(routes);
 app.use('/static', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.static(path.join(__dirname, '/client/build')));
-app.use('*', (req, res) => {
+app.use('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/404.html'));
+});
+app.use('', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/build/index.html'));
 });
+
 
 const server = http.createServer(app); // express uses this
 server.listen(PORT, () => {

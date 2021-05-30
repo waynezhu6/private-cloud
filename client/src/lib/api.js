@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-//const SERVER_URL = "http://localhost:5000/api/";
-const SERVER_URL = "http://34.123.191.140:5000/api/";
+const SERVER_URL = process.env.REACT_APP_BASE_URL || "http://34.123.191.140:5000/api/";
 
 const useToken = () => {
   const [token, setToken] = useState(null);
@@ -39,7 +38,7 @@ const signup = async(username, password) => {
 
 const getFileNames = async(token) => {
   //gets all image filenames of this user
-  let res = await fetch(SERVER_URL + "images", {
+  let res = await fetch(SERVER_URL + "files", {
     method: "GET",
     headers: {
       'x-token': token,
@@ -53,7 +52,7 @@ const getFileNames = async(token) => {
 
 const getImage = async(token, filename) => {
   //gets images
-  let res = await fetch(SERVER_URL + "images/" + filename, {
+  let res = await fetch(SERVER_URL + "files/" + filename, {
     method: "GET",
     headers: {
       'x-token': token,
@@ -65,7 +64,7 @@ const getImage = async(token, filename) => {
 }
 
 const uploadImage = async(body, token) => {
-  await fetch(SERVER_URL + "images", {
+  await fetch(SERVER_URL + "files", {
     method: "POST",
     body: body,
     headers: {

@@ -1,13 +1,6 @@
-HTTP GET /api/images
-  returns one or more images from this user
-  i - index to get. will return all images if unspecified
+HTTP POST /api/auth/login
 
-HTTP POST /api/images
-  upload one or more images to this user
-
-HTTP DELETE /api/images
-  remove an image from this user
-  i - index to remove. mandatory
+HTTP POST /api/auth/signup
 
 todo:
 -tokenized authentication
@@ -16,3 +9,48 @@ todo:
 -deploy to gcp, github pages
 -cli if time permits
 -project writeup
+
+HTTP GET /api/files/:path
+  gets file at this path
+
+HTTP POST /api/files/
+  - parent path
+  - file metadata
+  - raw file data
+  uploads file
+
+HTTP DELETE /api/files/
+  - path
+  deletes file at this path
+
+HTTP PUT /api/files/
+  - path
+  - file metadata
+  updates file or file metadata i.e. sharing
+
+api/files/metadata?
+
+File Tree:
+{
+  username: String,
+  uuid: String,
+  files: [{
+    name: String, // file name
+    path: String, // full file path
+    isDir: Boolean, // true if dir
+    fileType: String, // file extension type
+    lastModified: Date, // last modified date
+    files: [{path: String}], // file paths of descendent files (if dir)
+  }],
+  public: [{path: String}]
+}
+
+File Metadata:
+{
+  name: String, // file name
+  path: String, // full file path
+  isDir: Boolean, // true if dir
+  fileType: String, // file extension type
+  lastModified: Date, // last modified date
+  files: [{path: String}], // file paths of descendent files (if dir)
+}

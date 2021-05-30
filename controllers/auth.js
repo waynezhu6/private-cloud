@@ -1,19 +1,6 @@
-const njwt = require('njwt');
-const secureRandom = require('secure-random');
-const db = require('../db/index');
-
-const {
-  APP_SECRET = secureRandom.randomBuffer(256),
-  APP_BASE_URL = 'http://localhost:5000'
-} = process.env;
-
-const encodeToken = (data) => {
-  return njwt.create(data, APP_SECRET).compact();
-}
-
-const decodeToken = (data) => {
-  return njwt.verify(data, APP_SECRET).body;
-}
+const { login, signup, hasUser } = require('../db/auth');
+const { encodeToken, decodeToken } = require('../utils/jwt');
+const { createDir } = require('../utils/io');
 
 const jwtAuthentication = async(req, res, next) => {
   //injects userID into request if token is valid
@@ -22,17 +9,14 @@ const jwtAuthentication = async(req, res, next) => {
     return next();
 
   try{
-    const decoded = decodeToken(token);
-    const { userID } = decoded;
-    const hasUser = await db.hasUser(userID);
-    if(hasUser)
+    const { userID } = decodeToken(token);;
+    const userExists = await hasUser(userID);
+    if(userExists)
       req.userID = userID;
+    return next();
   }
   catch(e){
     return next();
-  }
-  finally{
-    next();
   }
 }
 
@@ -42,31 +26,32 @@ const isAuthenticated = async(req, res, next) => {
     return next();
 
   res.status(401);
-  //res.json({ error: 'User not authenticated!' });
+  res.json({ error: 'User not authenticated' });
 }
 
 const jwtLogin = async(req, res) => {
   //returns token if login successful
   const { username, password } = req.body;
-  const userID = await db.login(username, password);
+  const userID = await login(username, password);
 
   if(!userID){
     res.status(401);
-    return res.json({ error: 'Incorrect username or password!'});
+    return res.json({ error: 'Incorrect username or password'});
   }
 
   const token = encodeToken({ userID }); 
   return res.json({ token });
 }
 
-const signup = async(req, res) => {
+const jwtSignup = async(req, res) => {
   //returns true if signup successful
   const { username, password } = req.body;
-  let result = await db.signup(username, password);
+  let result = await signup(username, password);
   if(result){
+    createDir(username); // create the root folder for this user
     const token = encodeToken({ result }); 
     return res.json({ token });
   }
 }
 
-module.exports = { jwtLogin, jwtAuthentication, isAuthenticated, signup };
+module.exports = { jwtAuthentication, isAuthenticated, jwtLogin, jwtSignup };

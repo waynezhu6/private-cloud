@@ -1,14 +1,15 @@
+// controlling raw file data
+
 const db = require('../db/index');
 
 const GET = async(req, res) => {
-  //return one or more images
-  //console.log(req.params);
-  if(!req.params.id){
-    let filenames = await db.getFileNames(req.userID);
-    res.json({images: filenames});
+  // return one or more files
+  let path = req.params.path;
+  if(path){
+    res.sendFile(req.params.id, { root: './uploads/' + req.userID });
   }
   else{
-    res.sendFile(req.params.id, { root: './uploads/' + req.userID });
+    res.send({error: "No path specified"});
   }
 }
 
@@ -19,8 +20,12 @@ const POST = (req, res) => {
   res.send();
 }
 
+const PUT = (req, res) => {
+  // update a file
+}
+
 const DELETE = () => {
-  //removes image
+  // delete a file
 }
 
 module.exports = { GET, POST, DELETE };

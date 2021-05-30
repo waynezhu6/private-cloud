@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import API from "./lib/api";
 import './App.css';
 
@@ -6,6 +7,8 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Images from './components/Images';
 import Login from './components/Login';
+
+// import Login from './containers/Login/index';
 
 const App = () => {
 
@@ -46,6 +49,13 @@ const App = () => {
   
   return(
     <div className="body">
+
+      {/* <HashRouter>
+        <Switch>
+          <Route path="/login"><Login login={login}/></Route>
+          <Redirect to="/login"/>
+        </Switch>
+      </HashRouter> */}
 
       {!token ? <Login login={login} signup={signup}/> : ""}
 

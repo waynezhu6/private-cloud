@@ -1,3 +1,4 @@
+// configurations for multer
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -5,6 +6,7 @@ const fs = require('fs');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let dir = path.resolve("uploads/" + req.userID);
+    console.log(dir);
     mkdir(dir);
     cb(null, "uploads/" + req.userID);
   },

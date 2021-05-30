@@ -21,7 +21,7 @@ const Header = (props) => {
 
   return(
     <div className={styles.body}>
-      <div className={styles.item}>Shopify Backend Challenge</div>
+      <div className={styles.item}></div>
       <div className={styles.spacer}></div>
       <div className={styles.item}>
         <form action="" ref={form}>

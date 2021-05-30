@@ -1,13 +1,15 @@
 const express = require('express');
-const images = require('./images');
-const login = require('./login');
+const files = require('./files');
+const public = require('./public');
+const login = require('./auth');
 const auth = require('../controllers/auth');
 const router = express.Router();
 
-router.use('/api/images', [
+router.use('/api/files', [
   auth.jwtAuthentication, 
   auth.isAuthenticated
-], images);
+], files);
+router.use('/public/', public);
 router.use('/api/auth', login);
 
 module.exports = router;
