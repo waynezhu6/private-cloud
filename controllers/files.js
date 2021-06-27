@@ -2,6 +2,7 @@
 
 const db = require('../db/index');
 const { existsFile } = require('../utils/io');
+const { createFile } = require('../db/files');
 const { getAccess, setAccess } = require('../db/accessControl');
 
 const GET = async(req, res) => {
@@ -23,8 +24,10 @@ const GET = async(req, res) => {
 const POST = (req, res) => {
   //adds images
   console.log('hello');
-  let names = req.files.map((file) => file.originalname);
-  db.addImage(req.userID, names);
+  req.files.map((file) => {
+    let path = file.originalname;
+    createFile(req.userID, path);
+  });
   res.send();
 }
 

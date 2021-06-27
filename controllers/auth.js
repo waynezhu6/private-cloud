@@ -1,4 +1,4 @@
-const { login, signup, hasUser } = require('../db/auth');
+const { verifyUser, createUser, hasUser } = require('../db/users');
 const { encodeToken, decodeToken } = require('../utils/jwt');
 const { createDir } = require('../utils/io');
 
@@ -32,7 +32,7 @@ const isAuthenticated = async(req, res, next) => {
 const jwtLogin = async(req, res) => {
   //returns token if login successful
   const { username, password } = req.body;
-  const userID = await login(username, password);
+  const userID = await verifyUser(username, password);
 
   if(!userID){
     res.status(401);
@@ -46,10 +46,10 @@ const jwtLogin = async(req, res) => {
 const jwtSignup = async(req, res) => {
   //returns true if signup successful
   const { username, password } = req.body;
-  let result = await signup(username, password);
-  if(result){
-    createDir(username); // create the root folder for this user
-    const token = encodeToken({ result }); 
+  let userID = await createUser(username, password);
+  if(userID){
+    createDir(userID); // create the root folder for this user
+    const token = encodeToken({ userID }); 
     return res.json({ token });
   }
 }

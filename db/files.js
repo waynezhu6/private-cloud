@@ -1,34 +1,41 @@
 // database functions for manipulating file metadata
 const Path = require('path');
-const { Files } = require('./models');
+const { File } = require('./models');
 
-async function getFile(uuid, path){
+async function hasFile(uuid, path){
   // returns db file object, or undefined
-  let file = await Files.exists({ uuid, files: { $elemMatch: { path } } });
+  let file = await File.exists({ owner: uuid, path });
   return file;
 }
 
-async function createFile(uuid, file){
-  // creates file with 'file' metadata
-  // assumes file data is accurate
+async function getFiles(uuid, path){
+  // returns list of children files to this file
+  let file = File.findOne({ owner: uuid, path });
+  if(file){
+    return file.files;
+  }
+  return undefined;
+}
 
-  const { path } = file;
+async function createFile(uuid, fileData){
+  // creates file with 'file' metadata
+  // assumes file data is valid
+
+  const { path } = fileData;
   const parentPath = Path.dirname(path);
-  let fileExists = await getFile(uuid, path);
-  let parentExists = await getFile(uuid, parentPath);
+  let fileExists = await hasFile(uuid, path);
+  let parentExists = await hasFile(uuid, parentPath);
 
   if(!fileExists && parentExists && path !== "/"){
-
+    
     // insert into files collection
-    await Files.updateOne(
-      { uuid }, 
-      { $push : { files : file } }
-    );
+    let file = new File({ owner: uuid, ...fileData });
+    file.save();
 
     // update children files for parent
-    await Files.updateOne(
-      { uuid, 'files.path': parentPath }, 
-      { $push: { 'files.$.files': { path } } 
+    await File.updateOne(
+      { owner: uuid, path: parentPath }, 
+      { $push: { files: { path } } 
     });
 
   }
@@ -36,51 +43,28 @@ async function createFile(uuid, file){
 
 async function deleteFile(uuid, path){
   // delete the file at this path
-  let file = getFile(uuid, path);
+  let file = await hasFile(uuid, path);
 
   if(file && path !== "/"){
+    await File.deleteOne({ owner: uuid, path });
+
     const parentPath = Path.dirname(path);
-    // await Files.deleteOne({ uuid, 'files.path': path });
-    await Files.updateOne(
-      { uuid, 'files.path': parentPath }, 
-      { $pull: { 'files.$.files': { path } } 
+    await File.updateOne(
+      { owner: uuid, path: parentPath }, 
+      { $pull: { files: { path } } 
     });
   }
 }
 
-async function updateFile(uuid, file){
+async function updateFile(uuid, fileData){
   // update file metadata
-  if(hasFile(path)){
+  // assumes file data is valid
+  const { path } = fileData;
+  let file = File.findOne({ owner: uuid, path });
+
+  if(file){
 
   }
 }
 
-// async function createDir(userID, file){
-//   // creates a new directory in file metadata
-//   // file has the shape of a file defined in the files schema
-//   // returns true on success
-//   let parent = Path.dirname(file.path);
-//   let res = await Files.find({ uuid: userID });
-//   if(res.length){
-//     res[0].files.push(file);
-//     res[0].save();
-//     return true;
-//   }
-//   return false;
-// }
-
-// async function updateFile(username, file){
-//   // updates 'file' metadata
-//   let res = await Files.update(
-//     {username, "files.path": file.path},
-//     {$set: {"files.$": file}}
-//   );
-//   return;
-// }
-
-// async function deleteFile(username, path){
-//   // deletes file at 'path'
-// }
-
-const Meta = { getFile, createFile, updateFile, deleteFile }
-module.exports = Meta;
+module.exports = { hasFile, getFiles, createFile, updateFile, deleteFile };

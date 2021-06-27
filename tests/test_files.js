@@ -12,14 +12,18 @@ db.once('open', function() {
 });
 
 const main = async() => {
-  const uuid = '0fa2b904-cc02-4f56-8ce9-a75ef5429b0b';
+  const uuid = '088c235a-dbc6-4783-9989-c065ebb7807e';
   // createFile(
   //   uuid, 
   //   { 
+  //     isDir: true,
+  //     isPublic: false,
+
   //     name: 'test1.txt',
   //     path: '/test1.txt',
-  //     isDir: true,
-  //     fileType: undefined,
+  //     parent: '/',
+
+  //     fileType: '.txt',
   //     lastModified: Date.now(),
   //     files: []
   //   }
