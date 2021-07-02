@@ -1,12 +1,12 @@
 // controller for accessing publicly available files
 
 const db = require('../db/index');
-const { existsFile } = require('../utils/io');
-const { getAccess, setAccess } = require('../db/accessControl');
+const IO = require('../utils/io');
+const Access = require('../db/access');
 
 const GET = async(req, res) => {
   let { username, path } = req.params;
-  if(await existsFile(username, path) && await getAccess(username, path)){
+  if(await IO.hasFile(username, path) && await Access.get(username, path)){
     res.sendFile(path.join(__dirname, `/uploads/${username}/${path}`));
   }
   else{

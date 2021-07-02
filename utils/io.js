@@ -3,6 +3,7 @@
 const fs = require('fs');
 const { BASE_PATH = './uploads' } = process.env;
 
+
 async function listFiles(userID, directory){
   //returns userID's files in directory
   const path = `./uploads/${userID}/${directory}`;
@@ -21,7 +22,8 @@ async function listFiles(userID, directory){
   }
 }
 
-async function fileExists(path){
+
+async function hasFile(path){
   // returns true if this path is valid
   path = `${BASE_PATH}/${path}`;
   try{
@@ -33,10 +35,11 @@ async function fileExists(path){
   }
 }
 
+
 async function createDir(path){
   // create a new folder for this user at path
   // returns true on success
-  if(!await fileExists(path)){
+  if(!await hasFile(path)){
     return fs.mkdir(`${BASE_PATH}/${path}`, (err) => {
       return !err;
     });
@@ -44,8 +47,24 @@ async function createDir(path){
   return false;
 }
 
+
 async function createFile(path){
 
 }
 
-module.exports = { listFiles, fileExists, createDir, createFile };
+
+function getFilePath(path){
+  // returns formatted file path
+  return `${BASE_PATH}/${path}`;
+}
+
+
+const IO = { 
+  listFiles, 
+  hasFile,
+  getFilePath, 
+  createDir, 
+  createFile 
+};
+
+module.exports = IO;

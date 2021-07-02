@@ -1,11 +1,4 @@
-import { useState } from "react";
-
 const SERVER_URL = process.env.REACT_APP_BASE_URL || "http://34.123.191.140:5000/api/";
-
-const useToken = () => {
-  const [token, setToken] = useState(null);
-  return [token, setToken];
-}
 
 const login = async(username, password) => {
   //returns access token if successful
@@ -15,12 +8,13 @@ const login = async(username, password) => {
       'Content-Type':'application/json',
       'Accept':'application/json'
     },
+    credentials: 'include',
     body: JSON.stringify({ username, password })
   })
   .then(res => res.json())
-
   return res.token;
 }
+
 
 const signup = async(username, password) => {
   //returns true if signup successful
@@ -36,21 +30,35 @@ const signup = async(username, password) => {
   return res.token;
 }
 
-const getFileNames = async(token) => {
-  //gets all image filenames of this user
-  let res = await fetch(SERVER_URL + "files", {
-    method: "GET",
+
+const signout = async(username, password) => {
+  // request delete token cookie to sign out
+  let res = await fetch(SERVER_URL + "auth", {
+    method: "DELETE",
     headers: {
-      'x-token': token,
       'Content-Type':'application/json',
       'Accept':'application/json'
     }
-  })
-  .then(res => res.json());
-  return res;
+  });
 }
 
-const getImage = async(token, filename) => {
+
+const isAuthorized = async(username, password) => {
+  // returns true if this user is logged in
+  let res = await fetch(SERVER_URL + "auth", {
+    method: "GET",
+    headers: {
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    },
+    credentials: 'include'
+  })
+  .then(res => res.json())
+  return res.isAuthorized;
+}
+
+
+const getFileInfo = async(token, filename) => {
   //gets images
   let res = await fetch(SERVER_URL + "files/" + filename, {
     method: "GET",
@@ -63,7 +71,8 @@ const getImage = async(token, filename) => {
   return URL.createObjectURL(blob);
 }
 
-const uploadImage = async(body, token) => {
+
+const uploadFile = async(body, token) => {
   await fetch(SERVER_URL + "files", {
     method: "POST",
     body: body,
@@ -74,5 +83,13 @@ const uploadImage = async(body, token) => {
   .then(res => console.log(res));
 }
 
-const API = { login, signup, getImage, uploadImage, getFileNames, useToken };
-export default API;
+
+const PrivateCloud = { 
+  login, 
+  signup,
+  isAuthorized,
+  signout,
+  uploadFile, 
+  getFileInfo 
+};
+export default PrivateCloud;

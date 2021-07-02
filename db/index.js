@@ -1,7 +1,8 @@
 // code for initializing connection to database;
 const mongoose = require('mongoose');
+require('dotenv').config();
 
-const MONGO_URL = "mongodb://localhost:27017/private-cloud";
+const MONGO_URL = process.env.MONGO_URL;
 mongoose.connect(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true});
 const db = mongoose.connection;
 

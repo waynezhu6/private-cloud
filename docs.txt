@@ -1,32 +1,28 @@
+HTTP GET /api/auth/login
+returns {isAuthorized: true} if request has a valid cookie
+
 HTTP POST /api/auth/login
+accepts username and password, returns jwt access token and sets httpOnly cookie
 
 HTTP POST /api/auth/signup
+accepts username and password, creates a user in the database, 
+returns jwt access token and sets httpOnly cookie
 
-todo:
--tokenized authentication
--image api actions
--simple frontend
--deploy to gcp, github pages
--cli if time permits
--project writeup
+-----------------------------------------------------------------------------------------
 
-HTTP GET /api/files/:path
-  gets file at this path
+HTTP GET /api/file/:path
+sends the file at this path if it exists and user is authorized  
 
-HTTP POST /api/files/
-  - parent path
-  - file metadata
-  - raw file data
-  uploads file
+HTTP POST /api/file/:path
+upload a file and place it in this path if valid, then sets file metadata db
+-handle uploading two files of the same name
 
-HTTP DELETE /api/files/
-  - path
-  deletes file at this path
+HTTP DELETE /api/files/:path
+delete the file at this path if valid, then removes from file metadata db
+-think about deleting folders
 
-HTTP PUT /api/files/
-  - path
-  - file metadata
-  updates file or file metadata i.e. sharing
+HTTP PUT /api/files/:path
+updates file or file metadata i.e. sharing
 
 api/files/metadata?
 

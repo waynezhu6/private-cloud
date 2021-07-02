@@ -1,42 +1,96 @@
 // controller for private files
 
-const db = require('../db/index');
-const { existsFile } = require('../utils/io');
-const { createFile } = require('../db/files');
-const { getAccess, setAccess } = require('../db/accessControl');
+const IO = require('../utils/io');
+const Metadata = require('../db/files');
 
-const GET = async(req, res) => {
+
+const getFile = async(req, res) => {
   // return one or more files
-  let { username, path } = req.params;
-  if(username && path){
-    if(await existsFile(username, path)){
-      
+  let { path } = req.params;
+  let uuid = req.userID;
+
+  console.log('getFile', path);
+
+  if(uuid && path){
+    if(await IO.hasFile(uuid, path)){
+      res.status(200);
+      res.sendFile(getFilePath(path));
     }
     else{
-      res.send({error: "File not found."});
+      res.status(404);
+      res.send({error: "File not found"});
     }
   }
   else{
-    res.send({error: "Invalid username or filename!"});
+    res.status(400);
+    res.send({error: "Invalid request. File path not provided"});
   }
 }
 
-const POST = (req, res) => {
-  //adds images
-  console.log('hello');
+
+const getFileInfo = async(req, res) => {
+  // return file info
+  let { path } = req.params;
+  let uuid = req.userID;
+
+  console.log('getFileInfo', path);
+
+  if(uuid && path){
+    if(await IO.hasFile(uuid, path)){
+      res.status(200);
+      res.sendFile(Metadata.getFile(path));
+    }
+    else{
+      res.status(404);
+      res.send({error: "File not found"});
+    }
+  }
+  else{
+    res.status(400);
+    res.send({error: "Invalid request. File path not provided"});
+  }
+}
+
+
+const uploadFile = (req, res) => {
+  // upload a file
+  let parentPath = req.body.parent || '/';
+
   req.files.map((file) => {
-    let path = file.originalname;
-    createFile(req.userID, path);
+    let fileData = {
+      owner: req.userID,
+      isDir: false,
+      isPublic: false,
+      size: file.size,
+
+      name: file.originalname,
+      path: parentPath + file.originalname,
+      parent: parentPath,
+
+      filetype: undefined,
+      lastModified: Date.now(),
+      files: []
+    }
+    Metadata.createFile(req.userID, fileData);
   });
   res.send();
 }
 
-const PUT = (req, res) => {
+
+const updateFile = (req, res) => {
   // update a file
 }
 
-const DELETE = () => {
+
+const deleteFile = () => {
   // delete a file
 }
 
-module.exports = { GET, POST, PUT, DELETE };
+
+module.exports = { 
+  getFile, 
+  getFileInfo,
+  uploadFile,
+  updateFile, 
+  deleteFile
+};

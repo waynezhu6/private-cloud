@@ -3,18 +3,15 @@ const Path = require('path');
 const { File } = require('./models');
 
 async function hasFile(uuid, path){
-  // returns db file object, or undefined
+  // returns true if the file at path exists for this user
   let file = await File.exists({ owner: uuid, path });
   return file;
 }
 
-async function getFiles(uuid, path){
-  // returns list of children files to this file
+async function getFile(uuid, path){
+  // returns this file's metadata, or undefined if path is not a dir
   let file = File.findOne({ owner: uuid, path });
-  if(file){
-    return file.files;
-  }
-  return undefined;
+  return file || undefined;
 }
 
 async function createFile(uuid, fileData){
@@ -46,6 +43,7 @@ async function deleteFile(uuid, path){
   let file = await hasFile(uuid, path);
 
   if(file && path !== "/"){
+    // don't allow deleting root folder
     await File.deleteOne({ owner: uuid, path });
 
     const parentPath = Path.dirname(path);
@@ -61,10 +59,14 @@ async function updateFile(uuid, fileData){
   // assumes file data is valid
   const { path } = fileData;
   let file = File.findOne({ owner: uuid, path });
+  if(!file)
+    return
 
-  if(file){
-
-  }
+  let updated = { ...file, ...fileData };
+  File.updateOne(
+    { owner: uuid, path},
+    { ...updated }
+  )
 }
 
-module.exports = { hasFile, getFiles, createFile, updateFile, deleteFile };
+module.exports = { hasFile, getFile, createFile, updateFile, deleteFile };

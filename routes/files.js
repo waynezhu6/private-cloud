@@ -5,9 +5,12 @@ const upload = require('../controllers/multer');
 const files = require('../controllers/files');
 const router = express.Router({ mergeParams: true });
 
-router.get('/:username/:path', files.GET);
-router.post('/', upload.array('image'), files.POST);
-router.put('/', files.PUT)
-router.delete('/', (req, res) => {});
+router.get('/meta/:path', files.getFileInfo);
+router.get('/:path', files.getFile);
+router.post('/', upload.array('file'), files.uploadFile);
+router.put('/', files.updateFile)
+router.delete('/', files.deleteFile);
+
+router.use('/', (req, res) => res.sendStatus(404));
 
 module.exports = router;

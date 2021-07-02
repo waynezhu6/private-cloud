@@ -1,72 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
-import API from "./lib/api";
+import React, { useContext, useEffect } from "react";
+import { HashRouter, Redirect, Switch } from 'react-router-dom';
+
+import PrivateCloud from "./lib/api";
+import PrivateRoute from "./components/PrivateRoute";
+import RedirectRoute from "./components/RedirectRoute";
+
 import './App.css';
+import 'bulma/css/bulma.min.css';
+import 'font-awesome/css/font-awesome.min.css';
 
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import Images from './components/Images';
-import Login from './components/Login';
-
-// import Login from './containers/Login/index';
+import Auth from './containers/Auth/index';
+import Dashboard from './containers/Dashboard/index';
+import { StateContext } from "./components/StateContext";
 
 const App = () => {
 
-  const [token, setToken] = useState(null); //store app token here
-  const [images, setImages] = useState([]); //store filenames of this user's images
-  const [lastSubmit, setLastSubmit] = useState(Date.now());
-
-  const onFileSubmit = () => {
-    setLastSubmit(Date.now());
-  }
-
-  const login = async(username, password) => {
-    setToken(await API.login(username, password));
-  }
-
-  const signup = async(username, password) => {
-    setToken(await API.signup(username, password));
-  }
-
-  const getImages = async() => {
-    let filenames = await API.getFileNames(token);
-    if(!filenames.images)
-      return
-
-    let blobs = [];
-    for(const name of filenames.images)
-      blobs.push({img: await API.getImage(token, name), name });
-
-    console.log(blobs);
-    setImages(blobs);
-  }
+  const [state, setState] = useContext(StateContext);
 
   useEffect(() => {
-    if(token){
-      getImages();
+
+    const isAuthorized = async() => {
+      if(await PrivateCloud.isAuthorized()){
+        setState({...state, isAuthorized: true});
+      }
     }
-  }, [lastSubmit, token])
+    isAuthorized();
+  });
   
   return(
     <div className="body">
 
-      {/* <HashRouter>
+      <HashRouter>
         <Switch>
-          <Route path="/login"><Login login={login}/></Route>
-          <Redirect to="/login"/>
+          <RedirectRoute exact path="/login"><Auth/></RedirectRoute>
+          <RedirectRoute exact path="/signup"><Auth/></RedirectRoute>
+          <PrivateRoute exact path="/"><Dashboard/></PrivateRoute>
+          <Redirect to="/"/>
         </Switch>
-      </HashRouter> */}
-
-      {!token ? <Login login={login} signup={signup}/> : ""}
-
-      <Header token={token} onFileSubmit={onFileSubmit}/>
-      <div className="content">
-        <Sidebar/>
-        <Images images={images}/>
-      </div> 
+      </HashRouter>
 
     </div>
-  )
+  );
 };
 
 export default App;
