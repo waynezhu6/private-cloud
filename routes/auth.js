@@ -5,5 +5,6 @@ const router = express.Router({ mergeParams: true });
 router.post('/login', auth.jwtLogin);
 router.post('/signup', auth.jwtSignup);
 router.get('/', auth.isAuthorized);
+router.delete('/', auth.removeAuth);
 
 module.exports = router;

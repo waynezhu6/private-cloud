@@ -1,15 +1,14 @@
 const express = require('express');
-const files = require('./files');
+const auth = require('./auth');
+const file = require('./file');
+const metadata = require('./metadata');
 const public = require('./public');
-const login = require('./auth');
-const auth = require('../controllers/auth');
+const { jwtAuthentication, isAuthenticated } = require('../controllers/auth');
 const router = express.Router();
 
-router.use('/api/file', [
-  auth.jwtAuthentication, 
-  auth.isAuthenticated
-], files);
+router.use('/api/auth', auth);
+router.use('/api/file', [jwtAuthentication, isAuthenticated], file);
+router.use('/api/metadata', [jwtAuthentication, isAuthenticated], metadata);
 router.use('/public', public);
-router.use('/api/auth', login);
 
 module.exports = router;

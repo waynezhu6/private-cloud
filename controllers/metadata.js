@@ -1,31 +1,32 @@
-// controlling raw file data
+const IO = require('../utils/io');
+const Metadata = require('../db/metadata');
 
-const db = require('../db/index');
-
-const GET = async(req, res) => {
-  // return one or more files
-  let path = req.params.path;
-  if(path){
-    res.sendFile(req.params.id, { root: './uploads/' + req.userID });
+const getMetadata = async(req, res) => {
+  // return file info
+  try{
+    let { path } = req.params;
+    let uuid = req.uuid;
+  
+    if(uuid && path){
+      if(await IO.hasFile(uuid, path)){
+        res.status(200);
+        res.sendFile(Metadata.getFile(path));
+      }
+      else{
+        res.status(404);
+        res.send({error: "File not found"});
+      }
+    }
+    else{
+      res.status(400);
+      res.send({error: "Invalid request. File path not provided"});
+    }
   }
-  else{
-    res.send({error: "No path specified"});
+  catch(err){
+    res.status(500);
+    res.send({ error: err.toString() });
   }
+
 }
 
-const POST = (req, res) => {
-  //adds images
-  let names = req.files.map((file) => file.originalname);
-  db.addImage(req.userID, names);
-  res.send();
-}
-
-const PUT = (req, res) => {
-  // update a file
-}
-
-const DELETE = () => {
-  // delete a file
-}
-
-module.exports = { GET, POST, DELETE };
+module.exports = { getMetadata };

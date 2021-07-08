@@ -1,4 +1,4 @@
-HTTP GET /api/auth/login
+HTTP GET /api/auth/
 returns {isAuthorized: true} if request has a valid cookie
 
 HTTP POST /api/auth/login
@@ -7,6 +7,9 @@ accepts username and password, returns jwt access token and sets httpOnly cookie
 HTTP POST /api/auth/signup
 accepts username and password, creates a user in the database, 
 returns jwt access token and sets httpOnly cookie
+
+HTTP DELETE /api/auth/
+destroys cookie to log user out
 
 -----------------------------------------------------------------------------------------
 
@@ -24,7 +27,18 @@ delete the file at this path if valid, then removes from file metadata db
 HTTP PUT /api/files/:path
 updates file or file metadata i.e. sharing
 
-api/files/metadata?
+-----------------------------------------------------------------------------------------
+
+HTTP GET /api/metadata/:path
+returns file info
+
+-----------------------------------------------------------------------------------------
+
+HTTP POST /api/access/:path
+set access to public or private
+
+-----------------------------------------------------------------------------------------
+
 
 File Tree:
 {
@@ -50,3 +64,11 @@ File Metadata:
   lastModified: Date, // last modified date
   files: [{path: String}], // file paths of descendent files (if dir)
 }
+
+TODO:
+upload
+metadata
+update
+delete
+access
+auth

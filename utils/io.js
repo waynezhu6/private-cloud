@@ -1,31 +1,13 @@
 // a collection of IO helper functions
 
 const fs = require('fs');
+const Path = require('path');
 const { BASE_PATH = './uploads' } = process.env;
 
 
-async function listFiles(userID, directory){
-  //returns userID's files in directory
-  const path = `./uploads/${userID}/${directory}`;
-  try{
-    await fs.promises.access(path);
-    let files = [];
-    let directories = [];
-    fs.readdir(path, (err, files) => {
-      files.forEach(file => {
-        console.log(file);
-      });
-    });
-  }
-  catch(e){
-    console.log(e);
-  }
-}
-
-
-async function hasFile(path){
+async function hasFile(uuid, path){
   // returns true if this path is valid
-  path = `${BASE_PATH}/${path}`;
+  path = Path.join(BASE_PATH, uuid, path);
   try{
     await fs.promises.access(path, fs.constants.F_OK);
     return true;
@@ -36,35 +18,58 @@ async function hasFile(path){
 }
 
 
-async function createDir(path){
-  // create a new folder for this user at path
-  // returns true on success
-  if(!await hasFile(path)){
-    return fs.mkdir(`${BASE_PATH}/${path}`, (err) => {
-      return !err;
-    });
+async function isDirectory(uuid, path){
+  // return true if file at path is a directory
+  try{
+    path = Path.join(BASE_PATH, uuid, path);
+    stat = await fs.promises.lstat(path);
+    return stat.isDirectory();
   }
-  return false;
+  catch{
+    return false;
+  }
 }
 
 
-async function createFile(path){
-
+async function deleteFile(uuid, path){
+  // deletes the file at path, if it exists
+  // TODO
+  try{
+    path = Path.join(BASE_PATH, uuid, path);
+    await fs.promises.unlink(path);
+  }
+  catch{
+    throw Error(`Unable to delete file '${path}'`);
+  }
 }
 
 
-function getFilePath(path){
+async function createDir(uuid, path){
+  // create a new folder for this user at path
+  try{
+    if(!await hasFile(uuid, path)){
+      path = Path.join(BASE_PATH, uuid, path);
+      return await fs.promises.mkdir(path);
+    }
+  }
+  catch{
+    throw Error(`Unable to create directory '${path}'`);
+  }
+}
+
+
+function getFilePath(uuid, path){
   // returns formatted file path
-  return `${BASE_PATH}/${path}`;
+  path = Path.join(BASE_PATH, uuid, path);
 }
 
 
 const IO = { 
-  listFiles, 
   hasFile,
-  getFilePath, 
   createDir, 
-  createFile 
+  isDirectory,
+  getFilePath, 
+  deleteFile
 };
 
 module.exports = IO;

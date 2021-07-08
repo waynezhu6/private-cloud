@@ -17,7 +17,7 @@ const FileSchema = new mongoose.Schema({
   path: String, // full file path
   parent: String | undefined, // path of parent
 
-  fileType: String | undefined, // file extension type
+  filetype: String | undefined, // file extension type
   lastModified: Number, // last modified date
   files: [{path: String}], // file paths of children files (if dir)
 });

@@ -9,7 +9,7 @@ const {
 const encodeToken = (data) => {
   // encode data into jwt
   let jwt = njwt.create(data, APP_SECRET);
-  jwt.setExpiration(new Date().getTime() + (60*60*1000)); // One hour from now
+  jwt.setExpiration(new Date().getTime() + (24*60*60*1000)); // expire in one day
   return jwt.compact();
 }
 
@@ -19,7 +19,7 @@ const decodeToken = (data) => {
     return njwt.verify(data, APP_SECRET).body;
   }
   catch{
-    return undefined;
+    throw Error('Unable to decode token');
   }
 }
 
