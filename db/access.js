@@ -16,7 +16,7 @@ async function _isPublic(uuid, path){
     if(file.path == '/')
       return false;
 
-    let parentPath = Path.dirname(path);
+    let parentPath = Path.posix.dirname(path);
     return _isPublic(uuid, parentPath);
   }
 }

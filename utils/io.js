@@ -7,7 +7,7 @@ const { BASE_PATH = './uploads' } = process.env;
 
 async function hasFile(uuid, path){
   // returns true if this path is valid
-  path = Path.join(BASE_PATH, uuid, path);
+  path = Path.posix.join(BASE_PATH, uuid, path);
   try{
     await fs.promises.access(path, fs.constants.F_OK);
     return true;
@@ -21,7 +21,7 @@ async function hasFile(uuid, path){
 async function isDirectory(uuid, path){
   // return true if file at path is a directory
   try{
-    path = Path.join(BASE_PATH, uuid, path);
+    path = Path.posix.join(BASE_PATH, uuid, path);
     stat = await fs.promises.lstat(path);
     return stat.isDirectory();
   }
@@ -33,10 +33,14 @@ async function isDirectory(uuid, path){
 
 async function deleteFile(uuid, path){
   // deletes the file at path, if it exists
-  // TODO
   try{
-    path = Path.join(BASE_PATH, uuid, path);
-    await fs.promises.unlink(path);
+    let fullPath = Path.posix.join(BASE_PATH, uuid, path);
+    if(await isDirectory(uuid, path)){
+      await fs.promises.rmdir(fullPath, { recursive: true });
+    }
+    else{
+      await fs.promises.unlink(fullPath);
+    }
   }
   catch{
     throw Error(`Unable to delete file '${path}'`);
@@ -48,8 +52,8 @@ async function createDir(uuid, path){
   // create a new folder for this user at path
   try{
     if(!await hasFile(uuid, path)){
-      path = Path.join(BASE_PATH, uuid, path);
-      return await fs.promises.mkdir(path);
+      let fullPath = Path.posix.join(BASE_PATH, uuid, path);
+      return await fs.promises.mkdir(fullPath);
     }
   }
   catch{
@@ -60,7 +64,7 @@ async function createDir(uuid, path){
 
 function getFilePath(uuid, path){
   // returns formatted file path
-  path = Path.join(BASE_PATH, uuid, path);
+  path = Path.posix.join(BASE_PATH, uuid, path);
 }
 
 

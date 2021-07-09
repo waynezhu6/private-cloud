@@ -6,7 +6,7 @@ const Metadata = require('../db/metadata');
 
 const getFile = async(req, res) => {
   // return one or more files
-  let path = req.params.path || '/';
+  let path = Path.posix.join(req.params.path || '/');
   let uuid = req.uuid;
 
   if(await IO.isDirectory(uuid, path)){
@@ -32,10 +32,10 @@ const getFile = async(req, res) => {
 }
 
 
-const uploadFile = async(req, res, next) => {
+const uploadFile = async(req, res) => {
   // upload a file
   try{
-    let path = req.params.path || '/';
+    let path = Path.posix.join(req.params.path || '/');
     let uuid = req.uuid;
     let files = req.files || [];
     let parentIsDir = await IO.isDirectory(uuid, path);
@@ -53,16 +53,16 @@ const uploadFile = async(req, res, next) => {
         isPublic: false,
         size: 0,
   
-        name: Path.basename(path),
-        path,
-        parent: Path.dirname(path),
+        name: Path.posix.basename(path),
+        path: Path.posix.join(path),
+        parent: Path.posix.dirname(path),
   
         filetype: undefined,
         lastModified: Date.now(),
         files: []
       }
-      IO.createDir(uuid, path);
-      Metadata.createFile(uuid, fileData);
+      await IO.createDir(uuid, path);
+      await Metadata.createFile(uuid, fileData);
       return res.send();
     }
   
@@ -74,19 +74,19 @@ const uploadFile = async(req, res, next) => {
         size: file.size,
   
         name: file.originalname,
-        path: Path.join(path, file.originalname),
-        parent: path,
+        path: Path.posix.join(path, file.originalname),
+        parent: Path.posix.join(path),
   
-        filetype: Path.extname(file.originalname),
+        filetype: Path.posix.extname(file.originalname),
         lastModified: Date.now(),
         files: []
       }
-      let fullPath = Path.join(path, file.originalname);
+      let fullPath = Path.posix.join(path, file.originalname);
   
       if(!await Metadata.hasFile(uuid, fullPath))
-        Metadata.createFile(uuid, fileData);
+        await Metadata.createFile(uuid, fileData);
       else
-        Metadata.updateFile(uuid, fileData);
+        await Metadata.updateFile(uuid, fileData);
     });
   
     return res.send();
@@ -102,7 +102,7 @@ const uploadFile = async(req, res, next) => {
 const deleteFile = async(req, res) => {
   // delete a file
   try{
-    let path = req.params.path || '/';
+    let path = Path.posix.join(req.params.path || '/');
     let uuid = req.uuid;
     let hasFile = await IO.hasFile(uuid, path);
   
@@ -115,9 +115,9 @@ const deleteFile = async(req, res) => {
       res.status(404);
       return res.json({error: `Cannot delete '${path}', file not found`});
     }
-  
+
+    await IO.deleteFile(uuid, path);  
     await Metadata.deleteFile(uuid, path);
-    // await IO.deleteFile(uuid, path);
     return res.send();
   }
   catch(err){

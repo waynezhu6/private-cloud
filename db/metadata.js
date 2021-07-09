@@ -22,10 +22,8 @@ async function createFile(uuid, fileData){
   // assumes file data is valid
 
   const { path } = fileData;
-  const parentPath = Path.dirname(path);
+  const parentPath = Path.posix.dirname(path);
   let parentExists = await IO.hasFile(uuid, parentPath);
-
-  console.log(parentPath, parentExists);
 
   if(parentExists && path !== "/"){
     
@@ -57,7 +55,9 @@ async function deleteFile(uuid, path){
 
     // console.log(res1);
 
+    console.log(path);
     console.log(new RegExp('^' + path));
+    console.log(new RegExp('^' + path).test(path));
 
     let res = await File.deleteMany({ 
       owner: uuid, 
@@ -100,7 +100,6 @@ async function updateFile(uuid, fileData){
 
   let updated = { ...originalData, ...fileData };
 
-  console.log(updated);
   await File.updateOne(
     { owner: uuid, path},
     { ...updated }
