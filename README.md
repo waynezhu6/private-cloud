@@ -1,10 +1,10 @@
 <br />
 <p align="center">
 
-  <h3 align="center">Shopify Backend Challenge</h3>
+  <h3 align="center">Private Cloud</h3>
 
   <p align="center">
-    Building an image repository
+    Creating a cloud drive that you can self-host
     <br />
   </p>
 </p>
@@ -14,67 +14,152 @@
 * [About the Project](#about-the-project)
 * [Usage](#usage)
 * [API Reference](#api-reference)
-  * [Authentication](#apiauth)
-  * [Images](#apiimages)
+  * [Auth](#auth)
+  * [Files](#files)
+  * [File Info](#fileinfo)
+  * [Access Control](#accesscontrol)
+
 
 ## About The Project
 
-This project stores collections of images uploaded to a cloud file server, where users are then free to add, modify, or delete the images in their collections.
-A very simple frontend has been written in React.
+This project stores collections of files uploaded to a remote server, where users are then free to add, modify, or delete the images in their collections.
+A very simple frontend is written in React (work in progress).
 
-This app uses a React, Node.js, Express, MongoDB stack, and it's hosted on a Google Compute Engine cloud instance. On the backend, user data is stored in a MongoDB database, whereas the actual image files themselves are stored directly onto the disk. I'm using Express to route requests and return the appropriate responses, the specifications of which are noted below in the API reference.
+This app uses a React, Node.js, Express, MongoDB stack, and it's hosted on a my personal VPS via Docker. On the backend, user data is stored in a MongoDB database, whereas the actual image files themselves are stored directly onto the disk. I'm using Express to route requests and return the appropriate responses, the specifications of which are noted below in the API reference.
 
 ## Usage
 
-The easiest way to see this project in action is to visit the simple frontent at [http://34.123.191.140:5000](http://34.123.191.140:5000). **There, you can login with the preexisting sample user with username "user" and password "1234"**, or choose to signup with your own user credentials. There you should be able to see two images that I've uploaded. To upload more, click upload and choose the appropriate images. Once uploaded, you should see the page change accordingly.
-
-Otherwise, the API is hosted at [http://34.123.191.140:5000/api/*](http://34.123.191.140:5000/api/*), where you can interact with it directly.
+The easiest way to see this project in action is to visit the simple frontent at clone and run npm start in the root dir. Then you must create a user by signing up with your own user credentials (see API reference below). **A frontend is currently under development and will be publicly deployed soon.**
 
 ## API Reference
 
 At its core, this project is driven by an RESTful-type API written with Node.js and Express framework, acting as an interface between the client application and the file server/database that holds the user's images and information on the backend.
 
-### /api/auth/
-
+### Auth
 You must be an authenticated user to access the API. Authentication endpoints are located at the /api/auth/* path. As you'd expect, both return an access token upon successful authentication, but only signup will register a new user in the process. 
 
+
+#### Login
 ```http
-GET /api/auth/login
-GET /api/auth/signup
+POST /api/auth/login
 ```
 
-| Parameter | Type | Description |
+| Body | Type | Description |
+| :--- | :--- | :--- |
+| `username` | `string` | this user's username |
+| `password` | `string` | this user's password |
+| `cookie` | `boolean` | (optional) sets token in httpOnly cookie if true |
+
+
+#### Signup
+```http
+POST /api/auth/signup
+```
+
+| Body | Type | Description |
 | :--- | :--- | :--- |
 | `username` | `string` | this user's username |
 | `password` | `string` | this user's password |
 
-### /api/images/
 
-This set of endpoints allows you to perform CRUD operations on the collection of images themselves. **All of these endpoints require a header called 'x-token' specifying the access token issued after authentication.**
-
+#### Verify Token
 ```http
-GET /api/images/:id
+GET /api/auth/
+```
+Returns ```{ isAuthorized: true }``` if a valid token is supplied by the caller, either in the x-token header or as an httpOnly cookie
+
+
+#### Delete Token
+```http
+DELETE /api/auth/
+```
+Deletes the caller's httpOnly token cookie if present
+
+
+### Files
+This set of endpoints allows you to perform CRUD operations on the collection of files themselves. True to philosophy, folder are considered files here. **All endpoints require an 'x-token' header or an httpOnly cookie containing an access token, unless otherwise stated**
+
+
+#### Get File
+```http
+GET /api/file/:path
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `:id` | `string` | (optional) specifies a specific file name to query for |
+| `:path` | `string` | (optional) specifies a specific file name to query for |
 
-Gets this user's images. If the :id parameter is left empty, this endpoint will instead return an array of filenames for the photos in this user's repository
+Gets this user's file(s) at path. If path points to an individual file, that file will be returned. Otherwise if path points to a directory, that directory and its contents will be zipped and returned. Files through this endpoint are only accessible to the user that owns them, unless the isPublic flag is set to true (see Access Control)
 
+
+#### Upload File
 ```http
-POST /api/images/
+POST /api/file/:path
+```
+| Body | Type | Description |
+| :--- | :--- | :--- |
+| `:path` | `string` | path of folder to upload to |
+| `files` | `MIME-type File(s)` | a collection of images to upload to this user's repository |
+
+Uploads file(s) to the folder at path. If 'path' points to a nonexistent file and its parent is defined, then calling this endpoint creates a folder at that path. Otherwise if a folder exists at path, the contents of 'files' will be uploaded to path. If path is not supplied, files will be uploaded to the user root directory
+
+
+#### Delete File
+```http
+DELETE /api/file/:path
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `image` | `image/* MIME-type File(s)` | a collection of images to upload to this user's repository |
+| `:path` | `string` | path for file to delete |
 
-Uploads an image(s) to this user's repository. If the :id parameter is left empty, this endpoint will instead return an array of filenames for the photos in this user's repository
+Deletes the file at path from this user's repository, if it exists.
 
+
+### File Info
+These endpoints get information about file metadata. **All endpoints require an 'x-token' header or an httpOnly cookie containing an access token.**
+
+
+#### Get File Info
 ```http
-DELETE /api/images/
+GET /api/metadata/:path
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `:id` | `string` | specifies a specific file name to delete |
+| `:path` | `string` | (optional) specifies a specific file name to query for |
 
-Deletes the specified image from this user's repository, if it exists. **Not functioning yet**
+Gets the file info for this file. Returns a json with the following shape:
+```
+{
+  owner: string,                // file owner's uuid
+  isDir: boolean,               // true if dir
+  isPublic: boolean,            // true if file is public
+  size: number,                 // file's size in bytes
+
+  name: string,                 // file name
+  path: string,                 // full file path
+  parent: string | undefined,   // path of parent
+
+  filetype: string | undefined, // file extension, or undefined if dir
+  lastModified: number,         // last modified date
+  files: [{
+    path: string,
+    name: string,
+    isDir: boolean
+  }],                           // file info of children files (if dir)
+}
+```
+
+
+### Accesss Control
+These endpoints allows for controlling the access level for user files. **All endpoints require an 'x-token' header or an httpOnly cookie containing an access token.**
+
+
+#### Set Public Access Level
+```http
+GET /api/metadata/:path
+```
+| Body | Type | Description |
+| :--- | :--- | :--- |
+| `:path` | `string` | the path to the target file, or empty if targeting user root directory |
+| `isPublic` | `boolean` | grants access to everyone if isPublic is true |
+
+Sets the access level for this file. A public access level means anyone with the right url can access this file. A private access level means only this user can access. (More levels to come)
