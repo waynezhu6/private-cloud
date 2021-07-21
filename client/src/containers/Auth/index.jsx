@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Login from './Login';
 import styles from '../../styles/containers/Auth/index.module.scss';
 

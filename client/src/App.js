@@ -7,7 +7,6 @@ import RedirectRoute from "./components/RedirectRoute";
 
 import './App.css';
 import 'bulma/css/bulma.min.css';
-import 'font-awesome/css/font-awesome.min.css';
 
 import Auth from './containers/Auth/index';
 import Dashboard from './containers/Dashboard/index';
@@ -15,17 +14,17 @@ import { StateContext } from "./components/StateContext";
 
 const App = () => {
 
-  const [state, setState] = useContext(StateContext);
+  const [state, dispatch] = useContext(StateContext);
 
   useEffect(() => {
 
     const isAuthorized = async() => {
       if(await PrivateCloud.isAuthorized()){
-        setState({...state, isAuthorized: true});
+        dispatch({ type: 'auth.set', isAuthorized: true });
       }
     }
     isAuthorized();
-  });
+  }, []);
   
   return(
     <div className="body">
@@ -34,8 +33,7 @@ const App = () => {
         <Switch>
           <RedirectRoute exact path="/login"><Auth/></RedirectRoute>
           <RedirectRoute exact path="/signup"><Auth/></RedirectRoute>
-          <PrivateRoute exact path="/"><Dashboard/></PrivateRoute>
-          <Redirect to="/"/>
+          <PrivateRoute path="/"><Dashboard/></PrivateRoute>
         </Switch>
       </HashRouter>
 

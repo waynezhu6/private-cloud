@@ -1,0 +1,47 @@
+.body{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-flex: 1 1 200px;
+  -webkit-flex: 1 1 200px;
+  flex: 1 1 200px;
+  overflow: hidden;
+  padding: 7px;
+  position: relative;
+  vertical-align: top;
+  max-width: 100%;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card{
+  width: 100%;
+  padding: 16px;
+  background-color: #F8FAFB;
+  border-radius: 8px;
+  // box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.content{
+  width: 100%;
+  text-align: center;
+}
+
+.image{
+  text-align: center;
+  line-height: 0;
+}
+
+.label{
+  text-align: center;
+}
+
+.icon{
+  width: 50%;
+  height: 50%;
+
+  path{
+    stroke-width: 16;
+  }
+}

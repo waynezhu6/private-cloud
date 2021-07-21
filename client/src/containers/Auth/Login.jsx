@@ -9,13 +9,14 @@ const Login = () => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [state, setState] = useContext(StateContext);
+  const [_, dispatch] = useContext(StateContext);
   const history = useHistory();
 
   const login = async() => {
+    console.log(username, password);
     let token = await PrivateCloud.login(username, password);
     if(token){
-      setState({...state, isAuthorized: true});
+      dispatch({ type: 'auth.set', isAuthorized: true });
       history.push('/');
     }
   }

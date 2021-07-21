@@ -9,7 +9,7 @@ const login = async(username, password) => {
       'Accept':'application/json'
     },
     credentials: 'include',
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, password, cookie: true })
   })
   .then(res => res.json())
   return res.token;
@@ -58,17 +58,28 @@ const isAuthorized = async(username, password) => {
 }
 
 
-const getFileInfo = async(token, filename) => {
+// const getFileInfo = async(token, filename) => {
+//   //gets images
+//   let res = await fetch(SERVER_URL + "files/" + filename, {
+//     method: "GET",
+//     headers: {
+//       'x-token': token,
+//       'Content-Type': 'image/*'
+//     }
+//   })
+//   const blob = await res.blob();
+//   return URL.createObjectURL(blob);
+// }
+
+
+const getMetadata = async(filename) => {
   //gets images
-  let res = await fetch(SERVER_URL + "files/" + filename, {
+  let res = await fetch(SERVER_URL + "metadata/" + filename, {
     method: "GET",
-    headers: {
-      'x-token': token,
-      'Content-Type': 'image/*'
-    }
+    credentials: 'include'
   })
-  const blob = await res.blob();
-  return URL.createObjectURL(blob);
+  .then(res => res.json());
+  return res;
 }
 
 
@@ -78,7 +89,7 @@ const uploadFile = async(body, token) => {
     body: body,
     headers: {
       'x-token': token,
-    }
+    },
   })
   .then(res => console.log(res));
 }
@@ -90,6 +101,7 @@ const PrivateCloud = {
   isAuthorized,
   signout,
   uploadFile, 
-  getFileInfo 
+  //getFileInfo,
+  getMetadata
 };
 export default PrivateCloud;
