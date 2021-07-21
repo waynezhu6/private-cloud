@@ -19,7 +19,11 @@ const FileSchema = new mongoose.Schema({
 
   filetype: String | undefined, // file extension type
   lastModified: Number, // last modified date
-  files: [{path: String}], // file paths of children files (if dir)
+  files: [{
+    path: String,
+    name: String,
+    isDir: Boolean
+  }], // file paths of children files (if dir)
 });
 const File = new mongoose.model('File', FileSchema);
 

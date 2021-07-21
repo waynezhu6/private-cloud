@@ -70,15 +70,18 @@ const jwtLogin = async(req, res) => {
   // returns token if login successful
   // also sets token as httpOnly cookie
   try{
-    const { username, password } = req.body;
+    const { username, password, cookie } = req.body;
     const uuid = await Users.verifyUser(username, password);
     const token = JWT.encodeToken({ uuid }); 
     
-    res.cookie('token', token, { 
-      httpOnly: true,
-      maxAge: 24*60*60*1000, // expire in 1 day
-      secure: process.env.NODE_ENV !== "development"
-    });
+    if(cookie){
+      res.cookie('token', token, { 
+        httpOnly: true,
+        maxAge: 24*60*60*1000, // expire in 1 day
+        secure: process.env.NODE_ENV !== "development"
+      });
+    }
+
     res.setHeader('Access-Control-Allow-Credentials', true);
     return res.json({ token });
   }

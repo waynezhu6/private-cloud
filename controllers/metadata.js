@@ -1,25 +1,20 @@
+const Path = require('path');
 const IO = require('../utils/io');
 const Metadata = require('../db/metadata');
 
 const getMetadata = async(req, res) => {
   // return file info
   try{
-    let { path } = req.params;
+    let path = Path.posix.join(req.params.path || '/');
     let uuid = req.uuid;
   
-    if(uuid && path){
-      if(await IO.hasFile(uuid, path)){
-        res.status(200);
-        res.sendFile(Metadata.getFile(path));
-      }
-      else{
-        res.status(404);
-        res.send({error: "File not found"});
-      }
+    if(await IO.hasFile(uuid, path)){
+      res.status(200);
+      return res.json(await Metadata.getFile(uuid, path));
     }
     else{
-      res.status(400);
-      res.send({error: "Invalid request. File path not provided"});
+      res.status(404);
+      return res.send({error: `File '${path}' not found`});
     }
   }
   catch(err){

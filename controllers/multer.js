@@ -1,12 +1,11 @@
 // configurations for multer
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const IO = require('../utils/io');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let dir = path.resolve("uploads/", req.uuid, req.params.path || '/');
+    let dir = path.resolve("uploads/", req.uuid, req.params.path || '.');
     cb(null, dir);
   },
   filename: (req, file, cb) => {
@@ -21,6 +20,7 @@ const filter = async(req, file, cb) => {
   let uuid = req.uuid;
   let parentIsDir = await IO.isDirectory(uuid, path);
   let createDir = !await IO.hasFile(uuid, path);
+  req.hasFiles = true;
 
   if(!parentIsDir || createDir){
     return cb(null, false);

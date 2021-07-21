@@ -3,6 +3,7 @@ returns {isAuthorized: true} if request has a valid cookie
 
 HTTP POST /api/auth/login
 accepts username and password, returns jwt access token and sets httpOnly cookie
+(only if body.cookie is true)
 
 HTTP POST /api/auth/signup
 accepts username and password, creates a user in the database, 
@@ -24,9 +25,6 @@ HTTP DELETE /api/files/:path
 delete the file at this path if valid, then removes from file metadata db
 -think about deleting folders
 
-HTTP PUT /api/files/:path
-updates file or file metadata i.e. sharing
-
 -----------------------------------------------------------------------------------------
 
 HTTP GET /api/metadata/:path
@@ -35,7 +33,7 @@ returns file info
 -----------------------------------------------------------------------------------------
 
 HTTP POST /api/access/:path
-set access to public or private
+set access to public or private, requires body isPublic
 
 -----------------------------------------------------------------------------------------
 
@@ -66,9 +64,11 @@ File Metadata:
 }
 
 TODO:
-upload
-metadata
-update
-delete
-access
-auth
+file upload button
+file preview generation, endpoints
+right click context menu (download, share)
+show files
+file zip download
+raw query endpoint
+file tags
+

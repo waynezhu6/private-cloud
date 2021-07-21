@@ -22,8 +22,12 @@ async function createFile(uuid, fileData){
   // assumes file data is valid
 
   const { path } = fileData;
-  const parentPath = Path.posix.dirname(path);
+  let parentPath = Path.posix.dirname(path);
   let parentExists = await IO.hasFile(uuid, parentPath);
+
+  if(parentPath === "."){
+    parentPath = "/";
+  } 
 
   if(parentExists && path !== "/"){
     
@@ -34,7 +38,13 @@ async function createFile(uuid, fileData){
     // update children files for parent
     await File.updateOne(
       { owner: uuid, path: parentPath }, 
-      { $push: { files: { path } } 
+      { $push: { 
+        files: { 
+          path,
+          isDir: fileData.isDir,
+          name: fileData.name 
+        } 
+      } 
     });
 
   }
@@ -43,34 +53,26 @@ async function createFile(uuid, fileData){
 
 async function deleteFile(uuid, path){
   // delete the file at this path
-  let file = IO.hasFile(uuid, path);
+  let parentPath = Path.dirname(path);
 
-  if(file && path !== "/"){
+  if(parentPath === "."){
+    parentPath = "/";
+  }
+  
+  if(path !== "/"){
     // don't allow deleting root folder
-
-    // let res1 = await File.find({ 
-    //   owner: uuid, 
-    //   path: { $regex: new RegExp('^' + path), $options: 'i'}
-    // });
-
-    // console.log(res1);
-
-    console.log(path);
-    console.log(new RegExp('^' + path));
-    console.log(new RegExp('^' + path).test(path));
 
     let res = await File.deleteMany({ 
       owner: uuid, 
       path: { $regex: new RegExp('^' + path), $options: 'i'}
     });
-
     console.log(res);
+    console.log(parentPath, path);
 
-    // const parentPath = Path.dirname(path);
-    // await File.updateOne(
-    //   { owner: uuid, path: parentPath }, 
-    //   { $pull: { files: { path } } 
-    // });
+    await File.updateOne(
+      { owner: uuid, path: parentPath }, 
+      { $pull: { files: { path } } 
+    });
   }
 }
 

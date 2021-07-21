@@ -2,9 +2,9 @@
 
 const express = require('express');
 const public = require('../controllers/public');
-const { hasParams } = require('../controllers/utils');
 const router = express.Router({ mergeParams: true });
+const { hasParams } = require('../utils/middleware');
 
-router.get("/:username/:path", hasParams("username", "path"), public.GET)
+router.get("/:username/:path(*)", hasParams("username", "path"), public.GET);
 
 module.exports = router;

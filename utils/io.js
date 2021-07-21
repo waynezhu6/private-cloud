@@ -68,12 +68,19 @@ function getFilePath(uuid, path){
 }
 
 
+function get(uuid, path){
+  // return path to individual file, or to generated zip if path points to dir
+  // TODO: perhaps return a callback to delete temp zip file
+}
+
+
 const IO = { 
   hasFile,
   createDir, 
   isDirectory,
   getFilePath, 
-  deleteFile
+  deleteFile,
+  get
 };
 
 module.exports = IO;

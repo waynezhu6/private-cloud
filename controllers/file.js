@@ -35,7 +35,7 @@ const getFile = async(req, res) => {
 const uploadFile = async(req, res) => {
   // upload a file
   try{
-    let path = Path.posix.join(req.params.path || '/');
+    let path = Path.posix.join(req.params.path || '/').toLowerCase();
     let uuid = req.uuid;
     let files = req.files || [];
     let parentIsDir = await IO.isDirectory(uuid, path);
@@ -44,6 +44,11 @@ const uploadFile = async(req, res) => {
     if((!files || files.length == 0) && parentIsDir){
       res.status(400);
       return res.json({error: 'Must include file(s) to upload'});
+    }
+
+    if(req.hasFiles && createDir){
+      res.status(400);
+      return res.json({error: `Unable to upload to nonexistent directory '${path}'`});
     }
   
     if(createDir){
@@ -67,6 +72,7 @@ const uploadFile = async(req, res) => {
     }
   
     files.filter(file => file.fieldname === 'files').map(async(file) => {
+      file.originalname = file.originalname.toLowerCase();
       let fileData = {
         owner: req.uuid,
         isDir: false,
@@ -74,14 +80,14 @@ const uploadFile = async(req, res) => {
         size: file.size,
   
         name: file.originalname,
-        path: Path.posix.join(path, file.originalname),
-        parent: Path.posix.join(path),
+        path: Path.posix.join(path !== '/' ? path : '', file.originalname),
+        parent: path,
   
         filetype: Path.posix.extname(file.originalname),
         lastModified: Date.now(),
         files: []
       }
-      let fullPath = Path.posix.join(path, file.originalname);
+      let fullPath = Path.posix.join(path !== '/' ? path : '', file.originalname);
   
       if(!await Metadata.hasFile(uuid, fullPath))
         await Metadata.createFile(uuid, fileData);
@@ -102,7 +108,7 @@ const uploadFile = async(req, res) => {
 const deleteFile = async(req, res) => {
   // delete a file
   try{
-    let path = Path.posix.join(req.params.path || '/');
+    let path = Path.posix.join(req.params.path || '/').toLowerCase();
     let uuid = req.uuid;
     let hasFile = await IO.hasFile(uuid, path);
   

@@ -31,8 +31,8 @@ const createUser = async(username, password) => {
         isDir: true,
         isPublic: false,
         
-        name: '/',
-        path: '/',
+        name: '.',
+        path: '.',
         parent: undefined,
   
         fileType: undefined,
