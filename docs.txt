@@ -65,10 +65,9 @@ File Metadata:
 
 TODO:
 file upload button
-file preview generation, endpoints
-right click context menu (download, share)
-show files
-file zip download
-raw query endpoint
-file tags
-
+tags
+search
+query metadata endpoint
+image preview
+zip download
+zip upload

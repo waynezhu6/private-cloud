@@ -7,7 +7,7 @@ const RedirectRoute = ({ children }) => {
   const [state] = useContext(StateContext);
   return(
     <Route>
-      {state.auth ? <Redirect to="/"/> : children}
+      {state.isAuthorized ? <Redirect to="/"/> : children}
     </Route>
   );
 }

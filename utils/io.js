@@ -64,7 +64,7 @@ async function createDir(uuid, path){
 
 function getFilePath(uuid, path){
   // returns formatted file path
-  path = Path.posix.join(BASE_PATH, uuid, path);
+  return Path.posix.join(BASE_PATH, uuid, path);
 }
 
 

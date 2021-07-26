@@ -1,35 +1,42 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { IoIosFolder } from 'react-icons/io';
-import styles from '../styles/components/Folder.module.scss';
-import { StateContext } from './StateContext';
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 
-const Folder = ({ name, path }) => {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flex: '1 1 240px',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    userSelect: 'none'
+  },
+  card: {
+    width: '100%'
+  }
+}));
 
-  const [state, dispatch] = useContext(StateContext);
+const File = ({ name, path }) => {
+
   const history = useHistory();
+  const classes = useStyles();
 
-  return(
-    <div 
-      className={styles.body} 
-      onDoubleClick={() => {
-        history.push(path);
-      }}
-    >
-      <div className={styles.card}>
-
-        <div className={styles.content}>
-          <figure className={styles.image}>
-            <IoIosFolder className={styles.icon} color="#AAAAAA"/>
-          </figure>
-          <figure className={styles.label}>
-            {name}
-          </figure>
-        </div>
-
-      </div>
+  return (
+    <div className={classes.root} onDoubleClick={() => history.push(path)}>
+      <Card className={classes.card} variant="outlined">
+        <CardHeader
+          avatar={<FolderOpenIcon/>}
+          title={name}
+        />
+      </Card>
     </div>
   );
 }
 
-export default Folder;
+export default File;
+
+
+
+

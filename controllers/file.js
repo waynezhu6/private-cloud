@@ -1,5 +1,7 @@
 // controller for private files
 
+const fs = require('fs');
+const archiver = require('archiver');
 const Path = require('path');
 const IO = require('../utils/io');
 const Metadata = require('../db/metadata');
@@ -9,26 +11,37 @@ const getFile = async(req, res) => {
   let path = Path.posix.join(req.params.path || '/');
   let uuid = req.uuid;
 
-  if(await IO.isDirectory(uuid, path)){
-    // TODO: instead, zip and send directory
-    res.status(404);
-    return res.send({error: 'Invalid file path. Cannot be a directory'});
+  if(!uuid || !path){
+    res.status(400);
+    return res.send({error: 'Invalid request. File path not provided'});
   }
 
-  if(uuid && path){
-    if(await IO.hasFile(uuid, path)){
-      res.status(200);
-      res.sendFile(IO.getFilePath(uuid, path), {root: './'});
-    }
-    else{
-      res.status(404);
-      res.send({error: `File '${path}' not found`});
-    }
+  if(!await IO.hasFile(uuid, path)){
+    res.status(404);
+    return res.send({error: `File '${path}' not found`});
+  }
+
+  if(!await IO.isDirectory(uuid, path)){
+    res.status(200);
+    return res.sendFile(IO.getFilePath(uuid, path), {root: './'});
   }
   else{
-    res.status(400);
-    res.send({error: 'Invalid request. File path not provided'});
+    let zipPath = `./uploads/temp/${path === '/' ? 'all' : path}.zip`;
+    let ws = fs.createWriteStream(zipPath);
+    let archive = archiver('zip');
+
+    ws.on('close', () => {
+      res.download(zipPath, () => {
+        fs.promises.rmdir(zipPath, { recursive: true });
+      });
+    });
+
+    archive.pipe(ws);
+    console.log(IO.getFilePath(uuid, path))
+    archive.directory(IO.getFilePath(uuid, path), false);
+    archive.finalize();
   }
+
 }
 
 

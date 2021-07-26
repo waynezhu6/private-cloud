@@ -6,7 +6,6 @@ import PrivateRoute from "./components/PrivateRoute";
 import RedirectRoute from "./components/RedirectRoute";
 
 import './App.css';
-import 'bulma/css/bulma.min.css';
 
 import Auth from './containers/Auth/index';
 import Dashboard from './containers/Dashboard/index';
