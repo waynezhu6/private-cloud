@@ -5,28 +5,29 @@ const StateContext = createContext();
 
 const DEFAULT_STATE = {
   isAuthorized: false, // true if user is authorized
-  path: '', // current path
-  subpaths: []
+  selected: null, // path name of the current selected file
+  metadata: {}, // local cache of files, using path as key
 }
 
 const reducer = (state, action) => {
   switch(action.type){
-    case 'path.push': {
-      let subpaths = state.subpaths;
-      subpaths.push(action.path);
-      let path = subpaths.join('/');
-      return { ...state, path, subpaths };
+    case 'selected.set': {
+      return {...state, selected: action.path}
     }
-    case 'path.pop': {
-      let subpaths = state.subpaths;
-      subpaths.pop();
-      let path = subpaths.join('/');
-      return { ...state, path, subpaths };
+    case 'metadata.set': {
+      return {...state, metadata: action.files}
     }
-    case 'path.set': {
-      let subpaths = action.path.split('/');
-      let path = action.path;
-      return { ...state, path, subpaths };
+    case 'metadata.push': {
+      for(let file of action.files){
+        state.metadata[file.path] = file;
+      }
+      return {...state, metadata: { ...state.metadata } };
+    }
+    case 'metadata.pull': {
+      for(let path of action.paths){
+        delete state.metadata[path];
+      }
+      return {...state, metadata: { ...state.metadata } };
     }
     case 'auth.set': {
       return {...state, isAuthorized: action.isAuthorized }

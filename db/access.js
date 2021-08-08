@@ -38,5 +38,4 @@ async function set(uuid, path, isPublic){
   );
 }
 
-const Access = { get, set };
-module.exports = Access;
+module.exports = { get, set };

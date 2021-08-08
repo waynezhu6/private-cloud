@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import Folder from "../../components/Folder";
+import { StateContext } from "../../components/StateContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -11,14 +12,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Folders = ({ folders }) => {
+const Folders = () => {
 
+  const [state] = useContext(StateContext);
   const classes = useStyles()
 
   return(
     <div>
       <div className={classes.root}>
-        {folders.map((folder, index) => <Folder {...folder} key={index}/>)}
+        {Object.values(state.metadata)
+          .filter(file => file.isDir)
+          .map((folder, index) => <Folder {...folder} key={index}/>)
+        }
       </div>
     </div>
   );

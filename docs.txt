@@ -64,10 +64,11 @@ File Metadata:
 }
 
 TODO:
-file upload button
-tags
+add to favorite
+share
 search
-query metadata endpoint
-image preview
-zip download
-zip upload
+sidebar flags
+create new folder
+upload folder warning
+
+refactor tags API for put->insert, delete->remove, post->set

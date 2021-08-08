@@ -1,4 +1,4 @@
-// controller for accessing publicly available files
+// controller for getting publicly available files
 
 const Path = require('path');
 const IO = require('../utils/io');
@@ -7,9 +7,9 @@ const Access = require('../db/access');
 const GET = async(req, res) => {
   // retrieve public file
   try{
-    let { username, path } = req.params;
-    if(await IO.hasFile(username, path) && await Access.get(username, path)){
-      let fullPath = Path.posix.join(__dirname, 'uploads', username, path);
+    let { uuid, path } = req.params;
+    if(await IO.hasFile(uuid, path) && await Access.get(uuid, path)){
+      let fullPath = Path.posix.join(__dirname, 'uploads', uuid, path);
       res.sendFile(fullPath);
     }
     else{

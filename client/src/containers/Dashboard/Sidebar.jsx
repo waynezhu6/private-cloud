@@ -1,4 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
+import { useLocation } from 'react-router-dom';
+import PrivateCloud from '../../lib/api';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -9,6 +12,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Container from "@material-ui/core/Container";
 import Button from '@material-ui/core/Button';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import HomeIcon from '@material-ui/icons/Home';
 import StarIcon from '@material-ui/icons/Star';
@@ -19,7 +23,9 @@ import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import LibraryMusicIcon from '@material-ui/icons/LibraryMusic';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import FolderSharedIcon from '@material-ui/icons/FolderShared';
-import { Typography } from "@material-ui/core";
+
+import UploadMenu from "../../components/UploadMenu";
+import { StateContext } from "../../components/StateContext";
 
 const drawerWidth = 240;
 
@@ -40,8 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
   // necessary for content to be below app bar
   toolbar: {
-    paddingLeft: '16px',
-    paddingRight: '16px'
+    padding: '16px'
   },
   content: {
     flexGrow: 1,
@@ -49,19 +54,28 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   },
   input: {
-    display: 'none',
+    display: 'none'
   },
+  upload: {
+    width: '100%'
+  }
 }));
 
 const Sidebar = () => {
 
-  const [dropdown, setDropdown] = useState(false);
-  const fileInput = useRef(null);
-  const [modal, setModal] = useState(false);
+  const [state, dispatch] = useContext(StateContext);
   const classes = useStyles();
+  const location = useLocation();
+  const input = useRef();
 
-  const onFileChange = (e) => {
-    console.log(e.target.files);
+  const onFileChange = async(e) => {
+    let path = location.pathname;
+    const files = new FormData();
+    for(let file of e.target.files){
+      files.append('files', file);
+    }
+    let res = await PrivateCloud.uploadFile(path, files);
+    dispatch({ type: 'metadata.push', files: res });
   }
 
   return(
@@ -72,19 +86,26 @@ const Sidebar = () => {
         paper: classes.drawerPaper,
       }}
       anchor="left"
-    >
+      onContextMenu={() => console.log(state)}
+    >      
       <Container className={classes.toolbar}>
-        <Typography variant="body1">
-          Private Cloud
-        </Typography>
+        <UploadMenu/>
         <input
           className={classes.input}
-          id="contained-button-file"
           multiple
           type="file"
+          ref={input}
+          onChange={onFileChange}
         />
-        <label htmlFor="contained-button-file">
-          <Button variant="contained" color="primary" component="span">
+        <label>
+          <Button 
+            variant="outlined" 
+            color="default" 
+            component="span"
+            startIcon={<CloudUploadIcon/>}
+            className={classes.upload}
+            onClick={() => input.current.click()}
+          >
             Upload
           </Button>
         </label>

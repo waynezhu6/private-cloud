@@ -11,8 +11,9 @@ import styles from '../../styles/containers/Dashboard/Content.module.scss';
 import Breadcrumbs from "../../components/Breadcrumbs";
 import Folders from "./Folders";
 import Files from "./Files";
-import { StateContext  } from "../../components/StateContext";
+import { StateContext } from "../../components/StateContext";
 import PrivateCloud from "../../lib/api";
+import UploadMenu from "../../components/UploadMenu";
 
 const useStyles = makeStyles((theme) => ({
   searchbar: {
@@ -36,17 +37,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Content = () => {
 
-  const [state] = useContext(StateContext);
+  const [state, dispatch] = useContext(StateContext);
   const location = useLocation();
   const history = useHistory();
-  const [files, setFiles] = useState([]);
-  const [folders, setFolders] = useState([]);
-  const classes = useStyles();
+  const [contextMenu, setContextMenu] = useState({ mouseX: null, mouseY: null });
+  const classes = useStyles(); 
 
   useEffect(() => {
     const getFiles = async() => {
       let res = await PrivateCloud.getMetadata(location.pathname);
-      console.log(res);
       if(res.error || !res.isDir){
         history.push('/');
       }
@@ -58,26 +57,32 @@ const Content = () => {
   }, [location.pathname]);
 
   const reduceMetadata = (metadata) => {
-    let tempFiles = [];
-    let tempFolders = [];
+    let files = {};
 
     for(let file of metadata.files){
-      if(file.isDir)
-        tempFolders.push(file);
-      else
-        tempFiles.push(file);
+      files[file.path] = file;
     }
 
-    setFiles(tempFiles);
-    setFolders(tempFolders);
+    dispatch({ type: 'metadata.set', files });
+  }
+
+  const onContextMenu = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ mouseX: e.clientX - 2, mouseY: e.clientY - 4 });
   }
 
   return(
-    <div className={styles.body}>
+    <div className={styles.body} onContextMenu={onContextMenu} onClick={(e) => console.log(e.target == e.currentTarget)}>
 
-      <Paper component="form" className={classes.searchbar}>
+      <Paper 
+        component="form" 
+        variant="outlined"
+        className={classes.searchbar} 
+        onContextMenu={(e) => {e.stopPropagation()}}
+      >
         <IconButton type="submit" className={classes.iconButton} aria-label="search">
-          <SearchIcon />
+          <SearchIcon/>
         </IconButton>
         <InputBase
           className={classes.input}
@@ -88,8 +93,10 @@ const Content = () => {
 
       <Breadcrumbs/>
 
-      <Folders folders={folders}/>
-      <Files files={files}/>
+      <Folders/>
+      <Files/>
+
+      <UploadMenu {...contextMenu}/>
     </div>
   );
 }

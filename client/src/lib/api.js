@@ -31,7 +31,7 @@ const signup = async(username, password) => {
 }
 
 
-const signout = async(username, password) => {
+const signout = async() => {
   // request delete token cookie to sign out
   let res = await fetch(SERVER_URL + "auth", {
     method: "DELETE",
@@ -43,7 +43,7 @@ const signout = async(username, password) => {
 }
 
 
-const isAuthorized = async(username, password) => {
+const isAuthorized = async() => {
   // returns true if this user is logged in
   let res = await fetch(SERVER_URL + "auth", {
     method: "GET",
@@ -58,23 +58,9 @@ const isAuthorized = async(username, password) => {
 }
 
 
-// const getFileInfo = async(token, filename) => {
-//   //gets images
-//   let res = await fetch(SERVER_URL + "files/" + filename, {
-//     method: "GET",
-//     headers: {
-//       'x-token': token,
-//       'Content-Type': 'image/*'
-//     }
-//   })
-//   const blob = await res.blob();
-//   return URL.createObjectURL(blob);
-// }
-
-
-const getMetadata = async(filename) => {
+const getMetadata = async(path) => {
   //gets images
-  let res = await fetch(SERVER_URL + "metadata/" + filename, {
+  let res = await fetch(SERVER_URL + "metadata/" + path, {
     method: "GET",
     credentials: 'include'
   })
@@ -83,15 +69,37 @@ const getMetadata = async(filename) => {
 }
 
 
-const uploadFile = async(body, token) => {
-  await fetch(SERVER_URL + "files", {
+const uploadFile = async(path, body) => {
+  return await fetch(SERVER_URL + "file/" + path, {
     method: "POST",
     body: body,
-    headers: {
-      'x-token': token,
-    },
+    credentials: 'include'
   })
-  .then(res => console.log(res));
+  .then(res => res.json());
+}
+
+const updateFile = async(path, fileData) => {
+  await fetch(SERVER_URL + "file/" + path, {
+    method: "PUT",
+
+  })
+}
+
+
+const deleteFile = async(path) => {
+  await fetch(`${SERVER_URL}file/${path}`, {
+    method: 'DELETE',
+    credentials: 'include'
+  });
+}
+
+
+const setTags = async(path, tags, append) => {
+  await fetch(`${SERVER_URL}file/${path}`, {
+    method: 'POST',
+    body: { tags, append },
+    credentials: 'include'
+  });
 }
 
 
@@ -100,8 +108,10 @@ const PrivateCloud = {
   signup,
   isAuthorized,
   signout,
+  getMetadata,
   uploadFile, 
-  //getFileInfo,
-  getMetadata
+  updateFile,
+  deleteFile,
+  setTags
 };
 export default PrivateCloud;

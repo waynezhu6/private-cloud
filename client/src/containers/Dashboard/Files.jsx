@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import File from "../../components/File";
+import { StateContext } from "../../components/StateContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -11,14 +12,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Files = ({ files }) => {
+const Files = () => {
 
+  const [state] = useContext(StateContext);
   const classes = useStyles();
 
   return(
     <div>
       <div className={classes.root}>
-        {files.map((file, index) => <File {...file} key={index}/>)}
+        {Object.values(state.metadata)
+          .filter(file => !file.isDir)
+          .map((file, index) => <File {...file} key={index}/>)
+        }
       </div>
     </div>
   );

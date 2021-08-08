@@ -44,6 +44,7 @@ const SimpleBreadcrumbs = () => {
       className={classes.root} 
       separator={<NavigateNextIcon fontSize="small"/>} 
       aria-label="breadcrumb"
+      onContextMenu={(e) => e.stopPropagation()}
     >
       <Link 
         color="inherit" 

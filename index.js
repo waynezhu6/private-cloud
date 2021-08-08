@@ -15,7 +15,8 @@ app.use(cors({ exposedHeaders: 'x-token', credentials: true, origin: "http://loc
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 app.use(express.json());
-app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(routes);
 app.use('/static', express.static(path.join(__dirname, 'uploads')));

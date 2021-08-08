@@ -8,7 +8,7 @@ const Metadata = require('../db/metadata');
 
 const getFile = async(req, res) => {
   // return one or more files
-  let path = Path.posix.join(req.params.path || '/');
+  let path = Path.posix.join('/', req.params.path || '/');
   let uuid = req.uuid;
 
   if(!uuid || !path){
@@ -48,7 +48,7 @@ const getFile = async(req, res) => {
 const uploadFile = async(req, res) => {
   // upload a file
   try{
-    let path = Path.posix.join(req.params.path || '/').toLowerCase();
+    let path = Path.posix.join('/', req.params.path || '/').toLowerCase();
     let uuid = req.uuid;
     let files = req.files || [];
     let parentIsDir = await IO.isDirectory(uuid, path);
@@ -83,6 +83,8 @@ const uploadFile = async(req, res) => {
       await Metadata.createFile(uuid, fileData);
       return res.send();
     }
+
+    fileDatas = [];
   
     files.filter(file => file.fieldname === 'files').map(async(file) => {
       file.originalname = file.originalname.toLowerCase();
@@ -93,13 +95,14 @@ const uploadFile = async(req, res) => {
         size: file.size,
   
         name: file.originalname,
-        path: Path.posix.join(path !== '/' ? path : '', file.originalname),
+        path: Path.posix.join(path, file.originalname),
         parent: path,
   
         filetype: Path.posix.extname(file.originalname),
         lastModified: Date.now(),
         files: []
       }
+      fileDatas.push(fileData);
       let fullPath = Path.posix.join(path !== '/' ? path : '', file.originalname);
   
       if(!await Metadata.hasFile(uuid, fullPath))
@@ -108,7 +111,7 @@ const uploadFile = async(req, res) => {
         await Metadata.updateFile(uuid, fileData);
     });
   
-    return res.send();
+    return res.send(fileDatas);
   }
   catch(err){
     res.status(500);
@@ -118,10 +121,37 @@ const uploadFile = async(req, res) => {
 }
 
 
+const updateFile = async(req, res) => {
+  try{
+    let path = Path.posix.join('/', req.params.path || '/');
+    let uuid = req.uuid;
+
+    if(!await IO.hasFile(uuid, path)){
+      res.status(404);
+      return res.send({error: `File '${path}' not found`});
+    }
+
+    let fileData = {
+      isPublic: false,
+      name: null,
+      path: null,
+      fileType: null,
+      tags: null,
+      lastModified: null
+    }
+
+    res.status(200).send();
+  }
+  catch(err){
+
+  }
+}
+
+
 const deleteFile = async(req, res) => {
   // delete a file
   try{
-    let path = Path.posix.join(req.params.path || '/').toLowerCase();
+    let path = Path.posix.join('/', req.params.path || '/').toLowerCase();
     let uuid = req.uuid;
     let hasFile = await IO.hasFile(uuid, path);
   
@@ -150,5 +180,6 @@ const deleteFile = async(req, res) => {
 module.exports = { 
   getFile, 
   uploadFile,
+  updateFile,
   deleteFile
 };

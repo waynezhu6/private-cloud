@@ -6,14 +6,32 @@ const IO = require('../utils/io');
 
 async function hasFile(uuid, path){
   // returns true if this file exists in db
-  return File.exists({ owner: uuid, path });
+  return await File.exists({ owner: uuid, path });
 }
 
 
 async function getFile(uuid, path){
   // returns this file's metadata, or undefined if path is not a dir
-  let file = File.findOne({ owner: uuid, path });
+  let file = await File.findOne({ owner: uuid, path });
   return file || undefined;
+}
+
+
+async function queryFile(uuid, path, query){
+  // return custom query of files
+  
+  for(let key of Object.keys(query)){
+    if(query[key] === undefined){
+      delete query[key];
+    }
+  }
+
+  let file = await File.find({
+    owner: uuid,
+    path: { $regex: new RegExp('^' + path), $options: 'i'},
+    ...query
+  });
+  return file;
 }
 
 
@@ -40,9 +58,7 @@ async function createFile(uuid, fileData){
       { owner: uuid, path: parentPath }, 
       { $push: { 
         files: { 
-          path,
-          isDir: fileData.isDir,
-          name: fileData.name 
+          ...fileData
         } 
       } 
     });
@@ -62,12 +78,10 @@ async function deleteFile(uuid, path){
   if(path !== "/"){
     // don't allow deleting root folder
 
-    let res = await File.deleteMany({ 
+    await File.deleteMany({ 
       owner: uuid, 
       path: { $regex: new RegExp('^' + path), $options: 'i'}
     });
-    console.log(res);
-    console.log(parentPath, path);
 
     await File.updateOne(
       { owner: uuid, path: parentPath }, 
@@ -111,7 +125,8 @@ async function updateFile(uuid, fileData){
 
 module.exports = { 
   hasFile,
-  getFile, 
+  getFile,
+  queryFile, 
   createFile, 
   updateFile, 
   deleteFile 
